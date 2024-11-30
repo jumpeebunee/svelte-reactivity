@@ -26,7 +26,12 @@ export function update_pre_prop(fn, d = 1) {
   return value;
 }
 
-export const rest_props_handler = {
+/**
+ * The proxy handler for rest props (i.e. `const { x, ...rest } = $props()`).
+ * Is passed the full `$$props` object and excludes the named props.
+ * @type {ProxyHandler<{ props: Record<string | symbol, unknown>, exclude: Array<string | symbol>, name?: string }>}}
+ */
+const rest_props_handler = {
   // получить значение если его нету в exclude;
   get(target, key) {
     if (target.exclude.includes(key)) return;
@@ -68,3 +73,17 @@ export const rest_props_handler = {
     );
   },
 };
+
+/**
+ * @param {Record<string, unknown>} props
+ * @param {string[]} exclude
+ * @param {string} [name]
+ * @returns {Record<string, unknown>}
+ */
+/*#__NO_SIDE_EFFECTS__*/
+export function rest_props(props, exclude, name) {
+  return new Proxy(
+    DEV ? { props, exclude, name, other: {}, toProxy: [] } : { props, exclude },
+    rest_props_handler
+  );
+}
