@@ -9,4 +9,4 @@ const props = {
 };
 
 const p = rest_props(props, ["count"], "test");
-const p1 = spread_props({ name: "egor" }, 23, [1, 2, 3], null);
+const p1 = spread_props({ name: "egor" }, 23, [1, 2, 3]);
