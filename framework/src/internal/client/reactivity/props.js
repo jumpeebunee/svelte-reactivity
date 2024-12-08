@@ -152,6 +152,23 @@ const spread_props_handler = {
 
     return false;
   },
+  ownKeys(target) {
+    const keys = [];
+
+    for (let p of target.props) {
+      if (is_function(p)) p = p();
+
+      if (typeof p === "object" && p !== null) {
+        for (const key of Object.keys(p)) {
+          if (!keys.includes(key)) {
+            keys.push(key);
+          }
+        }
+      }
+    }
+
+    return keys;
+  },
 };
 
 /**
