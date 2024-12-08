@@ -1,4 +1,5 @@
 import { is_function, get_descriptor } from "../../shared/utils.js";
+import { STATE_SYMBOL, LEGACY_PROPS } from "../constants.js";
 import * as e from "../errors.js";
 
 const DEV = true;
@@ -138,6 +139,18 @@ const spread_props_handler = {
         return desc;
       }
     }
+  },
+  has(target, key) {
+    if (key === STATE_SYMBOL || key === LEGACY_PROPS) return false;
+
+    for (let p of target.props) {
+      if (is_function(p)) p = p();
+      if (typeof p === "object" && p !== null && key in p) {
+        return true;
+      }
+    }
+
+    return false;
   },
 };
 
