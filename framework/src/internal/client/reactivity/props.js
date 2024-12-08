@@ -122,6 +122,23 @@ const spread_props_handler = {
     }
     return false;
   },
+  getOwnPropertyDescriptor(target, key) {
+    let i = target.props.length;
+
+    while (i--) {
+      let p = target.props[i];
+      if (is_function(p)) p = p();
+      if (typeof p === "object" && p !== null && key in p) {
+        const desc = get_descriptor(p, key);
+
+        if (desc && !desc.configurable) {
+          desc.configurable = true;
+        }
+
+        return desc;
+      }
+    }
+  },
 };
 
 /**
