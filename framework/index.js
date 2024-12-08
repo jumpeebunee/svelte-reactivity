@@ -1,4 +1,7 @@
-import { rest_props } from "./src/internal/client/reactivity/props.js";
+import {
+  rest_props,
+  spread_props,
+} from "./src/internal/client/reactivity/props.js";
 
 const props = {
   count: 0,
@@ -6,3 +9,4 @@ const props = {
 };
 
 const p = rest_props(props, ["count"], "test");
+const p1 = spread_props({ name: "egor" }, 23, [1, 2, 3], null);

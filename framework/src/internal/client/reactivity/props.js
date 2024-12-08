@@ -1,3 +1,4 @@
+import { is_function } from "../../shared/utils.js";
 import * as e from "../errors.js";
 
 const DEV = true;
@@ -86,4 +87,31 @@ export function rest_props(props, exclude, name) {
     DEV ? { props, exclude, name, other: {}, toProxy: [] } : { props, exclude },
     rest_props_handler
   );
+}
+
+/**
+ * The proxy handler for spread props. Handles the incoming array of props
+ * that looks like `() => { dynamic: props }, { static: prop }, ..` and wraps
+ * them so that the whole thing is passed to the component as the `$$props` argument.
+ * @template {Record<string | symbol, unknown>} T
+ * @type {ProxyHandler<{ props: Array<T | (() => T)> }>}}
+ */
+const spread_props_handler = {
+  get(target, key) {
+    let i = target.props.length;
+
+    while (i--) {
+      let p = target.props[i];
+      if (is_function(p)) p = p();
+      if (typeof p === "object" && p !== null && key in p) return p[key];
+    }
+  },
+};
+
+/**
+ * @param {Array<Record<string, unknown> | (() => Record<string, unknown>)>} props
+ * @returns {any}
+ */
+export function spread_props(...props) {
+  return new Proxy({ props }, spread_props_handler);
 }
